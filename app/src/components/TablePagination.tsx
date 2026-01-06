@@ -74,7 +74,7 @@ export const TablePagination = ({
     >
       <Box sx={{ display: 'flex', gap: 0.5, alignItems: 'center' }}>
         {renderPageButtons()}
-        
+
         <Button
           onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}

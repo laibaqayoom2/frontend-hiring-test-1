@@ -1,8 +1,10 @@
-import type { NextConfig } from "next";
+import { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
-  reactCompiler: true,
+  reactStrictMode: true,
+  images: {
+    unoptimized: true, // disable image optimization for Netlify / client-side rendering
+  },
 };
 
 export default nextConfig;

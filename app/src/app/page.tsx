@@ -71,8 +71,8 @@ export default function Home() {
   };
 
   const handlePageChange = (page: number) => {
-  loadPage(page); 
-};
+    loadPage(page);
+  };
 
   const handleFilterChange = (event: any) => {
     setFilter(event.target.value as CallFilter);
@@ -97,12 +97,12 @@ export default function Home() {
       >
         <Toolbar>
           <Image
-            src="/images/TT_Logo.png"
-            alt="Company Logo"
-            width={160}
-            height={40}
-            style={{ width: 'auto', height: 'auto', marginRight: '16px' }}
-          />
+          src="/images/TT_Logo.png"
+          alt="Company Logo"
+          width={300}         
+          height={35}         
+          style={{ width: '300px', height: '35px', objectFit: 'contain' }}
+        />
           <Button
             onClick={handleLogout}
             sx={{
@@ -135,7 +135,7 @@ export default function Home() {
             <Typography sx={{ color: '#666' }}>Filter by:</Typography>
             <FormControl size="small" sx={{ minWidth: 120 }}>
               <Select
-              
+
                 value={filter}
                 onChange={handleFilterChange}
                 variant="standard"

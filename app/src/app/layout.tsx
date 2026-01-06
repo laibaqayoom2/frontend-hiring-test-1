@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Turing Technologies - Call Manager App',
   description: 'Manage your calls efficiently',
   icons: {
-    icon: '/images/TT_Logo_Cropped.png', 
+    icon: '/images/TT_Logo_Cropped.png',
   },
 };
 

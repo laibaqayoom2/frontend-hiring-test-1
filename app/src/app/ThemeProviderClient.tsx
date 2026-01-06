@@ -4,7 +4,7 @@ import React from 'react';
 import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
 
 const theme = createTheme({
-   typography: {
+  typography: {
     fontFamily: 'Avenir, sans-serif',
     h1: { fontWeight: 700 },
     h2: { fontWeight: 700 },

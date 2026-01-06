@@ -44,9 +44,9 @@ export default function LoginPage() {
           <Image
             src="/images/TT_Logo.png"
             alt="Company Logo"
-            width={160}
-            height={40}
-            style={{ width: 'auto', height: 'auto' }}
+            width={300}
+            height={35}
+            style={{ width: '300px', height: '35px', objectFit: 'contain' }}
           />
         </Toolbar>
       </AppBar>
@@ -63,15 +63,15 @@ export default function LoginPage() {
         <Container maxWidth="sm">
           <Paper sx={{ p: 4 }}>
             <form onSubmit={handleSubmit}>
-  
+
               <Typography
-                sx={{ fontWeight: 500}}
+                sx={{ fontWeight: 500 }}
               >
-                <span style={{ color: 'red' }}>*</span> User Name 
+                <span style={{ color: 'red' }}>*</span> User Name
               </Typography>
 
               <TextField
-              
+
                 fullWidth
                 placeholder="Email"
                 variant="outlined"
@@ -81,9 +81,9 @@ export default function LoginPage() {
                 required
               />
               <Typography
-                sx={{ fontWeight: 500, mt: 2}}
+                sx={{ fontWeight: 500, mt: 2 }}
               >
-                <span style={{ color: 'red' }}>*</span> Password 
+                <span style={{ color: 'red' }}>*</span> Password
               </Typography>
               <TextField
                 fullWidth
