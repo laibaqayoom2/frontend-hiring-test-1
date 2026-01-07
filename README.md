@@ -1,7 +1,3 @@
-Absolutely! Here's a polished, well-structured README for your project. I’ve organized it for clarity, added proper formatting, and improved readability while keeping all your details intact:
-
----
-
 # 📞 TuringTech Frontend Test
 
 ## Table of Contents
