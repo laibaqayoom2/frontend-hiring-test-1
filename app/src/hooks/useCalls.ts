@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { Call, CallFilter } from '@/types/call';
 import { fetchCalls } from '@/services/calls';
 import Pusher from 'pusher-js';
@@ -9,105 +9,60 @@ const PUSHER_KEY = 'd44e3d910d38a928e0be';
 const PUSHER_CLUSTER = 'eu';
 
 export const useCalls = () => {
-  const [allCalls, setAllCalls] = useState<Call[]>([]); // store all calls
-  const [calls, setCalls] = useState<Call[]>([]); // filtered + paginated
+  const [allCalls, setAllCalls] = useState<Call[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [offset, setOffset] = useState(0);
   const [filter, setFilter] = useState<CallFilter>('all');
 
-  const limit = 10; // results per page
+  const limit = 10;
 
-  // Fetch all calls from API
   const loadAllCalls = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetchCalls(0, 10000); // fetch all calls, adjust max if needed
-      setAllCalls(response.nodes);
+      const res = await fetchCalls(0, 10000);
+      setAllCalls(res.nodes);
       setError(null);
-    } catch (err) {
-      console.error(err);
+    } catch {
       setError('Failed to fetch calls');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // Apply filter + pagination whenever filter or offset changes
-  const applyFilterAndPagination = useCallback(() => {
-    let filtered = allCalls;
-
-    switch (filter) {
-    case 'archived':
-      filtered = filtered.filter(c => c.is_archived);
-      break;
-    case 'unarchived':          
-      filtered = filtered.filter(c => !c.is_archived);
-      break;
-    case 'missed':
-      filtered = filtered.filter(c => c.call_type === 'missed');
-      break;
-    case 'answered':
-      filtered = filtered.filter(c => c.call_type === 'answered');
-      break;
-    case 'voicemail':
-      filtered = filtered.filter(c => c.call_type === 'voicemail');
-      break;
-    case 'all':
-    default:
-      filtered = filtered;    
-      break;
-  }
-
-
-    setCalls(filtered.slice(offset, offset + limit));
-  }, [allCalls, filter, offset, limit]);
-
   useEffect(() => {
     loadAllCalls();
   }, [loadAllCalls]);
 
+  // Reset page on filter change
   useEffect(() => {
-    applyFilterAndPagination();
-  }, [applyFilterAndPagination]);
+    setOffset(0);
+  }, [filter]);
 
-  // Pagination functions
-  const totalCount = (() => {
+  const filteredCalls = useMemo(() => {
     switch (filter) {
       case 'archived':
-        return allCalls.filter(c => c.is_archived).length;
+        return allCalls.filter(c => c.is_archived);
       case 'unarchived':
-        return allCalls.filter(c => !c.is_archived).length;
+        return allCalls.filter(c => !c.is_archived);
       case 'missed':
-        return allCalls.filter(c => c.call_type === 'missed').length;
+        return allCalls.filter(c => c.call_type === 'missed');
       case 'answered':
-        return allCalls.filter(c => c.call_type === 'answered').length;
+        return allCalls.filter(c => c.call_type === 'answered');
       case 'voicemail':
-        return allCalls.filter(c => c.call_type === 'voicemail').length;
-      case 'all':
+        return allCalls.filter(c => c.call_type === 'voicemail');
       default:
-        return allCalls.length;
+        return allCalls;
     }
-  })();
+  }, [allCalls, filter]);
 
+  const calls = filteredCalls.slice(offset, offset + limit);
+  const totalCount = filteredCalls.length;
   const totalPages = Math.ceil(totalCount / limit);
 
   const loadPage = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setOffset((page - 1) * limit);
-  };
-
-  const nextPage = () => {
-    if (offset + limit < totalCount) setOffset(offset + limit);
-  };
-
-  const prevPage = () => {
-    if (offset > 0) setOffset(Math.max(0, offset - limit));
-  };
-
-  const refresh = () => {
-    loadAllCalls();
-    setOffset(0);
   };
 
   const updateCall = (updatedCall: Call) => {
@@ -116,7 +71,7 @@ export const useCalls = () => {
     );
   };
 
-  // Real-time updates via Pusher
+  // Pusher
   useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (!token) return;
@@ -128,10 +83,7 @@ export const useCalls = () => {
     });
 
     const channel = pusher.subscribe('private-aircall');
-
-    channel.bind('update-call', (data: Call) => {
-      updateCall(data);
-    });
+    channel.bind('update-call', updateCall);
 
     return () => {
       channel.unbind_all();
@@ -148,12 +100,7 @@ export const useCalls = () => {
     limit,
     totalCount,
     totalPages,
-    hasNextPage: offset + limit < totalCount,
-    hasPrevPage: offset > 0,
-    nextPage,
-    prevPage,
     loadPage,
-    refresh,
     updateCall,
     filter,
     setFilter,

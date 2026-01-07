@@ -28,20 +28,21 @@ import {
     Phone as PhoneIcon,
 } from '@mui/icons-material';
 import { Call } from '@/types/call';
-import { fetchCallById, archiveCall, unarchiveCall, addNote } from '@/services/calls';
+import { fetchCallById, toggleArchiveCall, addNote } from '@/services/calls';
 import { formatDuration, formatTime, getDateLabel } from '@/utils/groupByDate';
 
 export default function CallDetailsPage() {
     const router = useRouter();
     const params = useParams();
     const id = params?.id as string;
+    
 
     const [call, setCall] = useState<Call | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [noteContent, setNoteContent] = useState('');
     const [addingNote, setAddingNote] = useState(false);
-
+    const isArchived = call?.is_archived ?? false;
     useEffect(() => {
         if (id) {
             loadCall();
@@ -62,17 +63,13 @@ export default function CallDetailsPage() {
         }
     };
 
-    const handleArchiveToggle = async () => {
-        if (!call) return;
-
-        try {
-            const updatedCall = call.is_archived
-                ? await unarchiveCall(call.id)
-                : await archiveCall(call.id);
-            setCall(updatedCall);
-        } catch (err) {
-            console.error('Failed to toggle archive:', err);
-        }
+    const handleArchiveToggle = async (call: Call) => {
+    try {
+        const updatedCall = await toggleArchiveCall(call.id);
+        setCall(updatedCall);
+    } catch (err) {
+        console.error('Failed to toggle archive:', err);
+    }
     };
 
     const handleAddNote = async () => {
@@ -178,22 +175,12 @@ export default function CallDetailsPage() {
                     </Box>
 
                     <Button
-                        variant={call.is_archived ? 'outlined' : 'contained'}
-                        startIcon={call.is_archived ? <Unarchive /> : <Archive />}
-                        onClick={handleArchiveToggle}
-                        sx={{
-                            fontFamily: 'Avenir, sans-serif',
-                            textTransform: 'none',
-                            backgroundColor: call.is_archived ? 'transparent' : '#00a846',
-                            borderColor: '#00a846',
-                            color: call.is_archived ? '#00a846' : 'white',
-                            '&:hover': {
-                                backgroundColor: call.is_archived ? '#00a84610' : '#008a3a',
-                            },
-                        }}
-                    >
-                        {call.is_archived ? 'Unarchive' : 'Archive'}
-                    </Button>
+                        variant={isArchived ? 'outlined' : 'contained'}
+                        startIcon={isArchived ? <Unarchive /> : <Archive />}
+                        onClick={() => handleArchiveToggle(call)} // pass the call here
+                        >
+                        {isArchived ? 'Unarchive' : 'Archive'}
+                        </Button>
                 </Box>
 
                 <Divider sx={{ my: 3 }} />

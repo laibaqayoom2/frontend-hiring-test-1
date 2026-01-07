@@ -18,7 +18,7 @@ import {
 import { useCalls } from '@/hooks/useCalls';
 import CallTable from '@/components/CallTable';
 import TablePagination from '@/components/TablePagination';
-import { archiveCall, unarchiveCall, addNote } from '@/services/calls';
+import { toggleArchiveCall, addNote } from '@/services/calls';
 import { Call, CallFilter } from '@/types/call';
 import { isAuthenticated, logout } from '@/services/auth';
 import Image from 'next/image';
@@ -51,15 +51,14 @@ export default function Home() {
   const handleRowClick = (id: string) => router.push(`/call/${id}`);
 
   const handleArchiveToggle = async (call: Call) => {
-    try {
-      const updatedCall = call.is_archived
-        ? await unarchiveCall(call.id)
-        : await archiveCall(call.id);
-      updateCall(updatedCall);
-    } catch (err) {
-      console.error('Failed to toggle archive:', err);
-    }
-  };
+  try {
+    const updatedCall = await toggleArchiveCall(call.id);
+    updateCall(updatedCall);
+  } catch (err) {
+    console.error('Failed to toggle archive:', err);
+  }
+};
+
 
   const handleAddNote = async (call: Call, content: string) => {
     try {
