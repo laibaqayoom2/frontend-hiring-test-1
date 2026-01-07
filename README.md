@@ -1,348 +1,267 @@
-# :phone: TuringTech - Frontend technical test
+Absolutely! Here's a polished, well-structured README for your project. I’ve organized it for clarity, added proper formatting, and improved readability while keeping all your details intact:
 
-This test is a part of our hiring process at TuringTech for the Frontend Engineer position. It should take you between 6 to 8 hours, depending on your experience, to implement the minimal version. But we thought about a few bonuses, so feel free to spend some time on them if you want.
+---
 
-*Feel free to apply on our [Careers Page](https://www.turing-tech.org/careers?github=true) and email us at hr@turingtechnologies.org.*
+# 📞 TuringTech Frontend Test
 
-## Context
+## Table of Contents
 
-TuringTech is on a mission to revolutionize the business phone industry! This test is about (re) building a small part of our main application. You’ll use dedicated APIs providing mocked data for that.
+* [Project Overview](#project-overview)
+* [Features](#features)
+* [Demo](#demo)
+* [Tech Stack](#tech-stack)
+* [Folder Structure](#folder-structure)
+* [Getting Started](#getting-started)
+* [Authentication](#authentication)
+* [API Endpoints](#api-endpoints)
+* [Usage](#usage)
+* [Real-Time Updates](#real-time-updates)
+* [Pagination & Filtering](#pagination--filtering)
+* [Error Handling](#error-handling)
+* [Deployment](#deployment)
+* [Future Improvements](#future-improvements)
+* [License](#license)
 
-## Exercise
+---
 
-The application can be built using any Frontend Framework/Library such as React, Angular, Vue. We do use React (especially Next.js) on most of our projects.
+## Project Overview
 
-For the purpose of this test, you can use Bootstrap, Material or Ant Design for the base design library. Copy Styling of different components such as buttons, lists, fields etc. from the assets in the `/design-files` folder. 
+**TuringTech Frontend Test** is a **call management application** built with **Next.js**, **TypeScript**, and **Material UI**.
 
-This application must:
-- Display a paginated list of calls that you’ll retrieve from the API.
-- Display the call details view if the user clicks on a call. the view should display all the data related to the call itself.
-- Be able to archive one or several calls
-- Group calls by date
-- Handle real-time events (Whenever a call is archived or a note is being added to a call, these changes should be reflected on the UI immediately)
+It allows users to:
 
-Bonus:
-- Use Typescript and Next.js
-- Provide filtering feature, to filter calls by type (archived, missed …)
-- Use GraphQL to fetch data
-- Deploy your application to Netlify, GitHub Pages or Heroku
+* View a **paginated list of calls**
+* See **detailed information** for each call
+* **Archive / unarchive calls**
+* **Add notes** to calls
+* **Filter calls** by type
+* **Listen to real-time updates**
 
-**Important Note**: We want you to build this small app as you'd have done it for your current job. (UI, UX, tests, documentation matters).
+The app communicates with a **REST API backend** and uses **Pusher** for live updates.
 
-## APIs
+---
 
-There are 2 versions of the APIs for this test, so you can choose between:
-- REST API or 
-- GraphQL API.
+## Features
 
-Both expose the same data, so it’s really about which one you prefer.
+* **JWT Authentication**
+* Calls list with **pagination**
+* Call details with **notes**
+* **Archive / unarchive calls**
+* **Add notes** to calls
+* **Filter calls** by type: missed, answered, voicemail, archived
+* **Group calls by date**
+* **Real-time updates** via Pusher
+* **Responsive UI** for all devices
 
-### Model
+---
 
-Both APIs use the same models.
+## Tech Stack
 
-Call Model
+* **Frontend:** Next.js (App Router)
+* **Language:** TypeScript
+* **UI Library:** Material UI (MUI)
+* **State Management:** React Hooks
+* **API Requests:** Axios
+* **Real-Time:** Pusher JS SDK
+* **Deployment:** Netlify / GitHub Pages
 
-```
-type Call {
-  id: ID! // "unique ID of call"
-  direction: String! // "inbound" or "outbound" call
-  from: String! // Caller's number
-  to: String! // Callee's number
-  duration: Float! // Duration of a call (in seconds)
-  is_archived: Boolean! // Boolean that indicates if the call is archived or not
-  call_type: String! // The type of the call, it can be a missed, answered or voicemail.
-  via: String! // Aircall number used for the call.
-  created_at: String! // When the call has been made.
-  notes: Note[]! // Notes related to a given call
-}
-```
+---
 
-Note Model
-
-```
-type Note {
-  id: ID!
-  content: String!
-}
-```
-
-### GraphQL API (For REST API, scroll down)
-
-Base URL: https://frontend-test-api.aircall.dev/graphql
-
-#### Authentication
-
-You must first authenticate yourself before requesting the API. You can do so by executing the Login mutation. See below.
-
-#### Queries
-
-All the queries are protected by a middleware that checks if the user is authenticated with a valid JWT.
-
-`paginatedCalls` returns a list of paginated calls. You can fetch the next page of calls by changing the values of `offset` and `limit` arguments.
+## Folder Structure
 
 ```
-paginatedCalls(
-  offset: Float = 0
-  limit: Float = 10
-): PaginatedCalls!
-
-type PaginatedCalls {
-  nodes: [Call!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-}
+/frontend-hiring-test
+│
+├─ /app
+│  ├─ /call/[id]       # Call details page
+│  ├─ /login           # Login page
+│  └─ /page.tsx        # Calls list
+│
+├─ /components
+│  ├─ CallTable.tsx
+│  ├─ TablePagination.tsx
+│  └─ NotesList.tsx
+│
+├─ /hooks
+│  └─ useCalls.ts      # Data fetching, filtering, pagination, real-time updates
+│
+├─ /services
+│  ├─ api.ts           # Axios instance
+│  ├─ auth.ts          # Login, logout, refresh token
+│  └─ calls.ts         # API methods for calls
+│
+├─ /types
+│  └─ call.ts          # TypeScript types (Call, Note, etc.)
+│
+├─ /utils
+│  └─ groupByDate.ts   # Date formatting & grouping
+│
+├─ /public
+│  └─ /images          # Company logo and demo images
+│
+└─ next.config.ts      # Next.js configuration
 ```
 
-`activitiy` returns a single call if any, otherwise it returns null.
+---
 
-```
-call(id: Float!): Call
-```
+## Getting Started
 
-`me` returns the currently authenticated user.
+1. Clone the repository:
 
-```
-me: UserType!
-```
-
-```
-type UserType {
-  id: String!
-  username: String!
-}
+```bash
+git clone https://github.com/your-username/frontend-hiring-test.git
+cd frontend-hiring-test
 ```
 
-#### Mutations
+2. Install dependencies:
 
-To be able to grab a valid JWT token, you need to execute the `login` mutation.
-
-`login` receives the username and password as 1st parameter and return the access_token and the user identity.
-
-```graphql
-login(input: LoginInput!): AuthResponseType!
-
-input LoginInput {
-  username: String!
-  password: String!
-}
-
-interface AuthResponseType {
-  access_token: String!
-  user: UserType
-}
+```bash
+npm install
+# or
+yarn
 ```
 
-Once you are correctly authenticated you need to pass the Authorization header for all the next calls to the GraphQL API.
+3. Create a `.env.local` file with your API and Pusher credentials:
 
-```JSON
+```
+NEXT_PUBLIC_API_URL=<your_api_url>
+NEXT_PUBLIC_PUSHER_KEY=<your_pusher_key>
+NEXT_PUBLIC_PUSHER_CLUSTER=<your_pusher_cluster>
+```
+
+4. Run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## Authentication
+
+### Login
+
+**Endpoint:** `POST /auth/login`
+
+**Request Body:**
+
+```json
 {
-  "Authorization": "Bearer <YOUR_ACCESS_TOKEN>"
+  "username": "your-username",
+  "password": "your-password"
 }
 ```
 
-Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by calling the `refreshToken` mutation before the token gets expired.
+**Response:**
 
-`refreshToken` allows you to ask for a new fresh token based on your existing access_token
-
-```graphql
-refreshToken: AuthResponseType!
-```
-
-This will send you the same response as the `login` mutation.
-
-You must use the new token for the new requests made to the API.
-
-`archiveCall` as the name implies it either archive or unarchive a given call.If the call doesn't exist, it'll throw an error.
-
-```
-archiveCall(id: ID!): Call!
-```
-
-`addNote` create a note and add it prepend it to the call's notes list.
-
-```
-addNote(input: AddNoteInput!): Call!
-
-input AddNoteInput {
-  activityId: ID!
-  content: String!
-}
-```
-
-#### Subscriptions
-
-To be able to listen for the mutations/changes done on a given call, you can call the `onUpdateCall` using an actibity ID.
-
-`onUpdateCall` receives the call ID as the 1st parameter and returns a call instance.
-
-```
-onUpdateCall(id: ID): Call!
-```
-
-Now, whenever a call data changed either via the `addNote` or `archiveCall` mutations, you will receive a subscription event informing you of this change.
-
-_Don't forget to pass the Authorization header with the right access token in order to be able to listen for these changes_
-
-### REST API
-
-Base URL: https://frontend-test-api.aircall.dev
-
-#### Authentication
-
-You must first authenticate yourself before requesting the API. You can do so by sending a POST request to `/auth/login`. See below.
-
-#### GET endpoints
-
-All the endpoints are protected by a middleware that checks if the user is authenticated with a valid JWT.
-
-`GET` `/calls` returns a list of paginated calls. You can fetch the next page of calls by changing the values of `offset` and `limit` arguments.
-
-```
-/calls?offset=<number>&limit=<number>
-```
-
-Response:
-```
+```json
 {
-  nodes: [Call!]
-  totalCount: Int!
-  hasNextPage: Boolean!
+  "access_token": "<JWT_TOKEN>",
+  "refresh_token": "<REFRESH_TOKEN>"
 }
 ```
 
-`GET` `/calls/:id` return a single call if any, otherwise it returns null.
+Use the access token in the `Authorization` header:
 
-```
-/calls/:id<uuid>
-```
-
-`GET` `/me` return the currently authenticated user.
-
-```
-/me
+```http
+Authorization: Bearer <JWT_TOKEN>
 ```
 
-Response
-```
-{
-  id: String!
-  username: String!
-}
-```
+> ⚠️ Access tokens expire in 10 minutes. Use `POST /auth/refresh-token` to refresh.
 
-#### POST endpoints
+---
 
-To be able to grab a valid JWT token, you need to call the following endpoint:
+## API Endpoints
 
-`POST` `/auth/login` receives the username and password in the body and returns the access_token and the user identity.
+### Calls
 
-```
-/auth/login
+| Method | Endpoint                 | Description                 |
+| ------ | ------------------------ | --------------------------- |
+| GET    | /calls?offset=0&limit=10 | Get paginated list of calls |
+| GET    | /calls/:id               | Get single call details     |
+| PUT    | /calls/:id/archive       | Archive / unarchive a call  |
+| POST   | /calls/:id/note          | Add a note to a call        |
 
-// body
-{
-  username: String!
-  password: String!
-}
-```
+### User
 
-Once you are correctly authenticated you need to pass the Authorization header for all the next calls to the REST API.
+| Method | Endpoint | Description                    |
+| ------ | -------- | ------------------------------ |
+| GET    | /me      | Get current authenticated user |
 
-```JSON
-{
-  "Authorization": "Bearer <YOUR_ACCESS_TOKEN>"
-}
-```
+### Real-Time
 
-Note that the access_token is only available for 10 minutes. You need to ask for another fresh token by calling the `/auth/refresh-token` endpoint before the token gets expired.
+* **Pusher private channel:** `private-aircall`
+* **Event:** `update-call`
 
-`POST` `/auth/refresh-token` allows you to ask for a new fresh token based on your existing access_token
+---
 
-This will return the same response as the `/auth/login` resource.
+## Usage
 
-You must use the new token for the new requests made to the API.
+### Home Page
 
-`POST` `/calls/:id/note` create a note and add it prepend it to the call's notes list.
+* Displays a **paginated calls table**
+* **Filter by type:** All, Archived, Unarchived, Missed, Answered, Voicemail
+* Click on a call to view **details**
 
-```
-`/calls/:id/note`
+### Call Details Page
 
-Body
-{
-  content: String!
-}
-```
+* Displays call information: `from`, `to`, `duration`, `via`, `call type`, `call time`
+* List of **notes with timestamps**
+* **Add new notes**
+* **Archive / Unarchive call**
 
-It returns the `Call` as a response or an error if the note doesn't exist.
+---
 
-#### PUT endpoints
+## Real-Time Updates
 
-`PUT` `/calls/:id/archive` as the name implies it either archive or unarchive a given call. If the call doesn't exist, it'll throw an error.
+* Uses **Pusher** to listen for `update-call` events
+* UI updates **automatically** when a call is archived or a note is added
+* Private authentication uses `/pusher/auth` endpoint
 
-```
-PUT /calls/:id/archive
-```
+---
 
-#### Real-time
+## Pagination & Filtering
 
-In order to be aware of the changes done on a call, you need to subscribe to this private channel: `private-aircall` and listen for the following event: `update-call` which will return the call payload.
+* **Handled in `useCalls` hook**
+* Filtering supports: `archived`, `unarchived`, `missed`, `answered`, `voicemail`
+* Pagination updates **filtered results dynamically**
 
-This event will be called each time you add a note or archive a call.
+---
 
-Note that, you need to use Pusher SDK in order to listen for this event.
+## Error Handling
 
-Because this channel is private you need to authenticate first, to do that, you need to make 
-- `APP_AUTH_ENDPOINT` point to: `https://frontend-test-api.aircall.dev/pusher/auth`
-- set `APP_KEY` to `d44e3d910d38a928e0be`
-- and set `APP_CLUSTER` to `eu`
+| Status Code | Description                             |
+| ----------- | --------------------------------------- |
+| 400         | BAD_REQUEST – Invalid input             |
+| 401         | UNAUTHORIZED – Invalid or expired token |
+| 404         | NOT_FOUND – Call not found              |
 
-#### Errors
+> Errors are displayed using **MUI Alerts** in the UI.
 
-The REST API can return a different type of errors:
+---
 
-`400` `BAD_REQUEST` error, happens when you provide some data which doesn't respect a given shape.
+## Deployment
 
-Example
-```
-{
-  "statusCode": 400,
-  "message": [
-    "content must be a string",
-    "content should not be empty"
-  ],
-  "error": "Bad Request"
-}
+* Can be deployed on **Netlify** or **GitHub Pages**
+* Example Netlify deploy:
+
+```bash
+npm run build
+npm run start
 ```
 
-`401` `UNAUTHORIZED` error, happens when the user is not authorized to perform an action or if his token is no longer valid
+---
 
-Example
-```
-{
-  "statusCode": 401,
-  "message": "Unauthorized"
-}
-```
+## Future Improvements
 
-`404` `NOT_FOUND` error, happens when the user requests a resource that no longer exists.
+* Add **dark mode** support
+* Implement **infinite scrolling** for calls
+* Enhance **note editing & deletion**
+* Add **advanced filtering** (by date range, duration, etc.)
+* Improve **unit and integration tests**
 
-Example
-```
-{
-  "statusCode": 404,
-  "message": "The call does not exist!",
-  "error": "Not Found"
-}
-```
-## Does your UI looks like the image below?
-### If YES then you're doing better than 60% of the applicants.
 
-![Calls List](https://user-images.githubusercontent.com/88223175/184556209-23ed6342-5f9b-4b7a-b243-5cde59704d3b.png)
-
-## Code Submit
-Please organize, design, test and document your code as if it were going into production, create a loom video and send us a [pull request](https://opensource.com/article/19/7/create-pull-request-github). 
-
-We will review it and get back to you in order to talk about your code! 
-
-All the best and happy coding.
